@@ -1,0 +1,28 @@
+from Crypto.Cipher import DES3
+from hashlib import md5
+while True:
+    print("1.Encrpyt\n 2.Decrypt\n 3.Exit")
+    operation = input('choice:')
+    if operation not in ['1','2','3']:
+        print('Invalid Choice')
+        continue
+    if operation == '3':
+        break    
+    file = input('File path:')
+    key = input('key:')
+    key_hash = md5(key.encode('ascii')).digest()
+
+    tdes_key = DES3.adjust_key_parity(key_hash)
+    cipher=DES3.new(tdes_key, DES3.MODE_EAX, nonce=b'0')
+
+    with open(file,'rb') as input_file:
+        file_bytes = input_file.read()
+
+        if operation == '1':
+            new_file_bytes = cipher.encrypt(file_bytes)
+        else:
+            new_file_bytes = cipher.decrypt(file_bytes)
+    
+    with open(file,'wb') as output_file:
+        output_file.write(new_file_bytes)
+
